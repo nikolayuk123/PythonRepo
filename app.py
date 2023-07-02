@@ -24,13 +24,13 @@ def home():
         file.save(file_path)
 
         x, y, z = read_data_from_csv(file_path)
-        
-        filtered_idx = list(filter(lambda i: z[i]>25, range(len(z))))
-        
+
+        filtered_idx = list(filter(lambda i: z[i]>10000, range(len(z))))
+
         x = [x[i] for i in filtered_idx]
         y = [y[i] for i in filtered_idx]
-    
-    
+
+
     else:
         # Default synthetic data
         x = ["Afghanistan","Albania","Angola"]
@@ -47,24 +47,24 @@ def read_data_from_csv(file_path):
     z = []
 
     with open(file_path, 'r') as file:
-        reader = csv.reader(file)
+        reader = csv.reader(file,delimiter=";")
         next(reader)  # Skip the header row
         next(reader)
         for row in reader:
             if len(row) >= 3:
                 x.append(row[0])
-                y.append(float(row[1]))
-                z.append(float(row[2]))
+                y.append(float(row[37].strip() if row[37].strip()!="" else 0))
+                z.append(float(row[1].strip() if row[1].strip()!="" else 0))
 
     return x, y, z
 
 
 def create_chart(x, y):
-    bar_chart = pygal.Bar()
+    bar_chart = pygal.Bar(width=2000,x_label_rotation=270)
     bar_chart.title = 'Население (Population) стран с площадью (Area(sq km)) более 10.000'
     bar_chart.x_labels = x
     bar_chart.add('Population', y)
-   
+
 
     return bar_chart.render().decode().strip()
 
