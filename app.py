@@ -2,7 +2,7 @@ from flask import Flask, render_template, request
 from datetime import datetime
 import pygal
 import csv
-t
+
 
 app = Flask(__name__)
 
@@ -23,11 +23,19 @@ def home():
         file_path = 'tmp.csv'
         file.save(file_path)
 
-        x, y = read_data_from_csv(file_path)
+        x, y, z = read_data_from_csv(file_path)
+        
+        filtered_idx = list(filter(lambda i: z[i]>25, range(len(z))))
+        
+        x = [x[i] for i in filtered_idx]
+        y = [y[i] for i in filtered_idx]
+    
+    
     else:
         # Default synthetic data
-        x = [1, 2, 3, 4, 5]
-        y = [2, 4, 6, 8, 10]
+        x = ["Afghanistan","Albania","Angola"]
+        y = [647500,28748,1246700]
+
 
     chart_svg = create_chart(x, y)
 
@@ -36,23 +44,29 @@ def home():
 def read_data_from_csv(file_path):
     x = []
     y = []
+    z = []
 
     with open(file_path, 'r') as file:
         reader = csv.reader(file)
         next(reader)  # Skip the header row
+        next(reader)
         for row in reader:
-            x.append(row[0])
-            y.append(float(row[1]))
+            if len(row) >= 3:
+                x.append(row[0])
+                y.append(float(row[1]))
+                z.append(float(row[2]))
 
-    return x, y
+    return x, y, z
+
 
 def create_chart(x, y):
-    line_chart = pygal.Line()
-    line_chart.title = 'Example Chart'
-    line_chart.x_labels = x
-    line_chart.add('Series', y)
+    bar_chart = pygal.Bar()
+    bar_chart.title = 'Население (Population) стран с площадью (Area(sq km)) более 10.000'
+    bar_chart.x_labels = x
+    bar_chart.add('Population', y)
+   
 
-    return line_chart.render().decode().strip()
+    return bar_chart.render().decode().strip()
 
 if __name__ == '__main__':
     app.run()
