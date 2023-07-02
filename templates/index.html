@@ -4,13 +4,14 @@
 	<title>Glitch test</title>
 	<style>
         .chart {
-            max-width: 600px;
+            max-width: 2000px;
             margin: 0 auto;
         }
     </style>
 </head>
 <body>
-	<h1>Hello, world!</h1>
+	<h1 style="color:red;">Hello, Dmytro!
+	Thank you for Python lessons!</h1>
 	<h2>Current time is {{ now }}</h2>
   <h3>
     I am new to Python
@@ -27,7 +28,7 @@
             {{ chart_svg|safe }}
         {% else %}
             <p>No data available</p>
-        {% endif %}		
+        {% endif %}
     </div>
 </body>
 </html>
