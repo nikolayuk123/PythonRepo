@@ -8,13 +8,6 @@ app = Flask(__name__)
 
 @app.route('/', methods=['GET', 'POST'])
 def home():
-    x=[]
-    y=[]
-    z=[]
-    # Default synthetic data
-    x = ["Afghanistan","Albania","Angola"]
-    y = [647500,28748,1246700]
-
     if request.method == 'POST':
         if 'file' not in request.files:
             return 'No file uploaded'
@@ -30,30 +23,23 @@ def home():
         file_path = 'tmp.csv'
         file.save(file_path)
 
-        def checkDataCsv (file_path):
-            with open(file_path, 'r') as file:
-                reader = csv.reader(file, delimiter=';')
-                if len(next(reader))>=3:
-                    return True
-                else: return False
+        x, y, z = read_data_from_csv(file_path)
 
-        if checkDataCsv(file_path):
+        filtered_idx = list(filter(lambda i: z[i]>10000, range(len(z))))
 
-            x, y, z = read_data_from_csv(file_path)
+        x = [x[i] for i in filtered_idx]
+        y = [y[i] for i in filtered_idx]
 
-            warnMess='Данные успешно загружены'
 
-            filtered_idx = list(filter(lambda i: z[i]>10000, range(len(z))))
+    else:
+        # Default synthetic data
+        x = ["Afghanistan","Albania","Angola"]
+        y = [647500,28748,1246700]
 
-            x = [x[i] for i in filtered_idx]
-            y = [y[i] for i in filtered_idx]
-
-        else:
-            warnMess='Данные некорректны'
 
     chart_svg = create_chart(x, y)
 
-    return render_template('index.html', chart_svg=chart_svg, now=datetime.now(),warnMess = warnMess)
+    return render_template('index.html', chart_svg=chart_svg, now=datetime.now(),)
 
 def read_data_from_csv(file_path):
     x = []
